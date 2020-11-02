@@ -1,3 +1,10 @@
+#-*- coding:utf-8 -*-
+
+import sys
+import io
+sys.stdout = io.TextIOWrapper(sys.stdout.detach(), encoding = 'utf-8')
+sys.stderr = io.TextIOWrapper(sys.stderr.detach(), encoding = 'utf-8')
+
 from selenium import webdriver
 from bs4 import BeautifulSoup
 import time
@@ -5,7 +12,7 @@ from selenium.common.exceptions import UnexpectedAlertPresentException
 from selenium.webdriver.common.keys import Keys
 import os
 
-os.system('pause')
+# os.system('pause')
 
 btn_list = {
     '실습교육':'//*[@id="content-box"]/ul[1]/li[1]/div[1]/p[5]/a',
@@ -94,7 +101,7 @@ print("================================")
 study_bool = True
 
 while(study_bool):
-    print("3, 4번만 가능합니다.")
+    # print("3, 4번만 가능합니다.")
     num = input("1. 실습교육 \n2. 실험전후안전 \n3. 안전관리실무2 \n4. 안전의식 \n 선택 : ")
 
     print("================================")
@@ -170,33 +177,62 @@ while(study_bool):
             try:
                 time.sleep(2)
 
-                # driver.implicitly_wait(300)
-                video_html = driver.page_source
-                video_soup = BeautifulSoup(video_html, 'html.parser')
-                times = video_soup.select('div.time > span.time--duration')
+                if sub_num < 2:
+                    video_html = driver.page_source
+                    video_soup = BeautifulSoup(video_html, 'html.parser')
+                    times = video_soup.select('div.vjs-duration.vjs-time-control.vjs-control > div')
+                    print(times)
+                    time_min_sec = []
 
-                time_min_sec = []
+                    times = times[0].text
 
-                times = times[0].text
-                # print("times :", times)
-                time_min_sec = times.split(":")
+                    time_min_sec = times.split('Time')
 
-                # print("time :", time)
+                    time_min_sec = time_min_sec[1].split(":")
 
-                min = int(time_min_sec[0])
-                sec = int(time_min_sec[1])
-                total_time = (min * 60) + sec + 3
+                    min = int(time_min_sec[0])
+                    sec = int(time_min_sec[1])
+                    total_time = (min * 60) + sec + 3
+
+                    print(time_min_sec)
+
+                else:
+                    # driver.implicitly_wait(300)
+                    video_html = driver.page_source
+                    video_soup = BeautifulSoup(video_html, 'html.parser')
+                    times = video_soup.select('div.time > span.time--duration')
+
+                    time_min_sec = []
+
+                    times = times[0].text
+                    # print("times :", times)
+                    time_min_sec = times.split(":")
+
+                    # print("time :", time)
+
+                    min = int(time_min_sec[0])
+                    sec = int(time_min_sec[1])
+                    total_time = (min * 60) + sec + 3
 
                 try:
-                    mute_btn = driver.find_element_by_xpath('/html/body/div/div[3]/div[6]/div[10]')
+                    if sub_num < 2:
+                        mute_btn = driver.find_element_by_xpath('/html/body/footer/nav/ul/li[13]/i[2]')
+                    else:
+                        mute_btn = driver.find_element_by_xpath('/html/body/div/div[3]/div[6]/div[10]')
+
                     mute_btn.click()
+
                 except:
                     pass
 
                 # driver.implicitly_wait(total_time)
                 time.sleep(total_time)
                 # print("sleep")
-                next_btn = driver.find_element_by_xpath('/ html / body / div / div[3] / div[6] / div[13]')
+                if sub_num < 2:
+                    print("0")
+                    next_btn = driver.find_element_by_xpath('/html/body/footer/nav/ul/li[17]/i')
+                else:
+                    next_btn = driver.find_element_by_xpath('/ html / body / div / div[3] / div[6] / div[13]')
                 next_btn.click()
 
 
