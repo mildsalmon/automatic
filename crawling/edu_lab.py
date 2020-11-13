@@ -34,6 +34,7 @@ sub_btn_list = {
             '//*[@id="content-box"]/div/ul[2]/li/h4/span/a',
             '//*[@id="content-box"]/div/ul[3]/li/h4/span/a',
             '//*[@id="content-box"]/div/ul[4]/li/h4/span/a']
+
 }
 
 print("================================")
@@ -78,193 +79,209 @@ print("로그인 합니다")
 print("================================")
 login.click()
 
-mypage = driver.find_element_by_xpath('//*[@id="main02"]/div[1]/fieldset/ul/li[1]/a')
-print("마이페이지로 갑니다")
-print("================================")
-mypage.click()
+count = 0
 
-html = driver.page_source
-soup = BeautifulSoup(html, 'html.parser')
-lecture_list = soup.select('div.floatL > p.mT10')
+while(True):
+    if count != 0:
+        driver.get('https://edu.labs.go.kr/')
+    count = count + 1
 
-lecture_text_list = []
+    mypage = driver.find_element_by_xpath('//*[@id="main02"]/div[1]/fieldset/ul/li[1]/a')
+    print("마이페이지로 갑니다")
+    print("================================")
+    mypage.click()
 
-for lecture in lecture_list:
-    lecture_text_list.append(lecture.text)
+    html = driver.page_source
+    soup = BeautifulSoup(html, 'html.parser')
+    lecture_list = soup.select('div.floatL > p.mT10')
 
-print("학습하실 강좌 리스트\n")
+    lecture_text_list = []
 
-for lecture in lecture_text_list:
-    print(lecture)
-print("================================")
+    for lecture in lecture_list:
+        lecture_text_list.append(lecture.text)
 
-study_bool = True
+    print("학습하실 강좌 리스트\n")
 
-while(study_bool):
-    # print("3, 4번만 가능합니다.")
-    num = input("1. 실습교육 \n2. 실험전후안전 \n3. 안전관리실무2 \n4. 안전의식 \n 선택 : ")
-
+    for lecture in lecture_text_list:
+        print(lecture)
     print("================================")
 
-    if num == "1":
-        btn_code = btn_list['실습교육']
-    elif num == "2":
-        btn_code = btn_list['실험전후안전']
-    elif num == "3":
-        btn_code = btn_list['안전관리실무2']
-    elif num == "4":
-        btn_code = btn_list['안전의식']
+    study_bool = True
 
-    study = driver.find_element_by_xpath(btn_code)
-    study.click()
+    while(study_bool):
+        # print("3, 4번만 가능합니다.")
+        num = input("1. 실습교육 \n2. 실험전후안전 \n3. 안전관리실무2 \n4. 안전의식 \n 선택 : ")
 
-    driver.switch_to.frame('listContentsInfoFrame')
-
-    if num == "1":
-        sub_btn_codes = sub_btn_list['실습교육']
-    elif num == "2":
-        sub_btn_codes = sub_btn_list['실험전후안전']
-    elif num == "3":
-        sub_btn_codes = sub_btn_list['안전관리실무2']
-    elif num == "4":
-        sub_btn_codes = sub_btn_list['안전의식']
-
-    sub_study_bool = True
-
-    parent_window = driver.current_window_handle
-    print(parent_window)
-
-    while(sub_study_bool):
-        sub_study_html = driver.page_source
-        sub_sutdy_soup = BeautifulSoup(sub_study_html, 'html.parser')
-        sub_lecture_list = sub_sutdy_soup.select('li > h4 > a')
-
-        sub_lecture_text_list = []
-
-        for lecture in sub_lecture_list:
-            sub_lecture_text_list.append(lecture.text.strip())
-
-        print("학습하실 강좌 리스트\n")
-
-        for i, lecture in enumerate(sub_lecture_text_list):
-            print(str(i) + ". " + lecture)
-
-        all_window = driver.window_handles
-        print(all_window)
-
-        sub_num = input("선택 : ")
-        sub_num = int(sub_num)
-        print("================================")
-
-        sub_study = driver.find_element_by_xpath(sub_btn_codes[sub_num])
-        sub_study.click()
-
-        driver.implicitly_wait(10)
-
-        all_window = driver.window_handles
-        print(all_window)
-
-        child_window = all_window[-1]
-
-        driver.switch_to.window(child_window)
-        print(driver.current_window_handle)
-
-        driver.switch_to.frame('contentsMain')
-
-        driver.maximize_window()
-
-        while(True):
-            try:
-                time.sleep(2)
-
-                if sub_num < 2:
-                    video_html = driver.page_source
-                    video_soup = BeautifulSoup(video_html, 'html.parser')
-                    times = video_soup.select('div.vjs-duration.vjs-time-control.vjs-control > div')
-                    print(times)
-                    time_min_sec = []
-
-                    times = times[0].text
-
-                    time_min_sec = times.split('Time')
-
-                    time_min_sec = time_min_sec[1].split(":")
-
-                    min = int(time_min_sec[0])
-                    sec = int(time_min_sec[1])
-                    total_time = (min * 60) + sec + 3
-
-                    print(time_min_sec)
-
-                else:
-                    # driver.implicitly_wait(300)
-                    video_html = driver.page_source
-                    video_soup = BeautifulSoup(video_html, 'html.parser')
-                    times = video_soup.select('div.time > span.time--duration')
-
-                    time_min_sec = []
-
-                    times = times[0].text
-                    # print("times :", times)
-                    time_min_sec = times.split(":")
-
-                    # print("time :", time)
-
-                    min = int(time_min_sec[0])
-                    sec = int(time_min_sec[1])
-                    total_time = (min * 60) + sec + 3
-
-                try:
-                    if sub_num < 2:
-                        mute_btn = driver.find_element_by_xpath('/html/body/footer/nav/ul/li[13]/i[2]')
-                    else:
-                        mute_btn = driver.find_element_by_xpath('/html/body/div/div[3]/div[6]/div[10]')
-
-                    mute_btn.click()
-
-                except:
-                    pass
-
-                # driver.implicitly_wait(total_time)
-                time.sleep(total_time)
-                # print("sleep")
-                if sub_num < 2:
-                    print("0")
-                    next_btn = driver.find_element_by_xpath('/html/body/footer/nav/ul/li[17]/i')
-                else:
-                    next_btn = driver.find_element_by_xpath('/ html / body / div / div[3] / div[6] / div[13]')
-                next_btn.click()
-
-
-            except UnexpectedAlertPresentException as e:
-                print(e.__dict__["msg"])
-                driver.close()
-                driver.switch_to.window(driver.window_handles[0])
-                driver.switch_to.frame('listContentsInfoFrame')
-
-                break
-
-            except Exception as e:
-                print(e)
-                continue
-
-
-        next = input("강의를 다 보셨으면 0번을 누르세요")
-
-        if(next=="0"):
-            break
-        else:
+        if num < "0" or num > "4":
+            print("다시")
             continue
 
-    # driver.switch_to_default_content()
-    # driver.switch_to.frame('ec141b1710aa0db35ed5a5d406a9d641')
-    driver.find_element_by_class_name("close").click()
-    # driver.find_element_by_xpath('//*[@id="modal1_box"]/div/div[1]/button').send_keys(Keys.ENTER)
-    # close_btn = driver.find_element_by_xpath('//*[@id="modal1_box"]/div/div[1]/button')
-    # close_btn.click()
-    driver.switch_to_default_content()
-    # driver.switch_to.frame('listContentsInfoFrame')
-    # driver.switch_to.window(window_name=parent_window)
+        print("================================")
+
+        if num == "1":
+            btn_code = btn_list['실습교육']
+        elif num == "2":
+            btn_code = btn_list['실험전후안전']
+        elif num == "3":
+            btn_code = btn_list['안전관리실무2']
+        elif num == "4":
+            btn_code = btn_list['안전의식']
+
+        study = driver.find_element_by_xpath(btn_code)
+        study.click()
+
+        driver.switch_to.frame('listContentsInfoFrame')
+
+        if num == "1":
+            sub_btn_codes = sub_btn_list['실습교육']
+        elif num == "2":
+            sub_btn_codes = sub_btn_list['실험전후안전']
+        elif num == "3":
+            sub_btn_codes = sub_btn_list['안전관리실무2']
+        elif num == "4":
+            sub_btn_codes = sub_btn_list['안전의식']
+
+        study_bool = False
+        sub_study_bool = True
+
+        parent_window = driver.current_window_handle
+        print(parent_window)
+
+        while(sub_study_bool):
+            sub_study_html = driver.page_source
+            sub_sutdy_soup = BeautifulSoup(sub_study_html, 'html.parser')
+            sub_lecture_list = sub_sutdy_soup.select('li > h4 > a')
+
+            sub_lecture_text_list = []
+
+            for lecture in sub_lecture_list:
+                sub_lecture_text_list.append(lecture.text.strip())
+
+            print("학습하실 강좌 리스트\n")
+
+            for i, lecture in enumerate(sub_lecture_text_list):
+                print(str(i) + ". " + lecture)
+
+            all_window = driver.window_handles
+            print(all_window)
+
+            sub_num = input("선택 : ")
+            sub_num = int(sub_num)
+            if sub_num not in range(len(sub_lecture_list)):
+                print("다시")
+                continue
+            print("================================")
+
+            sub_study = driver.find_element_by_xpath(sub_btn_codes[sub_num])
+            sub_study.click()
+
+            driver.implicitly_wait(10)
+
+            all_window = driver.window_handles
+            print(all_window)
+
+            child_window = all_window[-1]
+
+            driver.switch_to.window(child_window)
+            print(driver.current_window_handle)
+
+            driver.switch_to.frame('contentsMain')
+
+            driver.maximize_window()
+
+            sub_study_bool = False
+
+            while(True):
+                try:
+                    time.sleep(2)
+
+                    if sub_num < 2:
+                        video_html = driver.page_source
+                        video_soup = BeautifulSoup(video_html, 'html.parser')
+                        times = video_soup.select('div.vjs-duration.vjs-time-control.vjs-control > div')
+                        print(times)
+                        time_min_sec = []
+
+                        times = times[0].text
+
+                        time_min_sec = times.split('Time')
+
+                        time_min_sec = time_min_sec[1].split(":")
+
+                        min = int(time_min_sec[0])
+                        sec = int(time_min_sec[1])
+                        total_time = (min * 60) + sec + 3
+
+                        print(time_min_sec)
+
+                    else:
+                        # driver.implicitly_wait(300)
+                        video_html = driver.page_source
+                        video_soup = BeautifulSoup(video_html, 'html.parser')
+                        times = video_soup.select('div.time > span.time--duration')
+
+                        time_min_sec = []
+
+                        times = times[0].text
+                        # print("times :", times)
+                        time_min_sec = times.split(":")
+
+                        # print("time :", time)
+
+                        min = int(time_min_sec[0])
+                        sec = int(time_min_sec[1])
+                        total_time = (min * 60) + sec + 3
+
+                    try:
+                        if sub_num < 2:
+                            mute_btn = driver.find_element_by_xpath('/html/body/footer/nav/ul/li[13]/i[2]')
+                        else:
+                            mute_btn = driver.find_element_by_xpath('/html/body/div/div[3]/div[6]/div[10]')
+
+                        mute_btn.click()
+
+                    except:
+                        pass
+
+                    # driver.implicitly_wait(total_time)
+                    time.sleep(total_time)
+                    # print("sleep")
+                    if sub_num < 2:
+                        print("0")
+                        next_btn = driver.find_element_by_xpath('/html/body/footer/nav/ul/li[17]/i')
+                    else:
+                        next_btn = driver.find_element_by_xpath('/ html / body / div / div[3] / div[6] / div[13]')
+                    next_btn.click()
+
+
+                except UnexpectedAlertPresentException as e:
+                    print(e.__dict__["msg"])
+                    driver.close()
+                    driver.switch_to.window(driver.window_handles[0])
+                    driver.switch_to.frame('listContentsInfoFrame')
+
+                    break
+
+                except Exception as e:
+                    print(e)
+                    continue
+
+
+            next = input("강의를 다 보셨으면 0번을 누르세요.\n 아니라면 아무키나 입력하세요")
+
+            if(next=="0"):
+                driver.quit()
+            else:
+                pass
+
+        # # driver.switch_to_default_content()
+        # # driver.switch_to.frame('ec141b1710aa0db35ed5a5d406a9d641')
+        # driver.find_element_by_class_name("close").click()
+        # # driver.find_element_by_xpath('//*[@id="modal1_box"]/div/div[1]/button').send_keys(Keys.ENTER)
+        # # close_btn = driver.find_element_by_xpath('//*[@id="modal1_box"]/div/div[1]/button')
+        # # close_btn.click()
+        # driver.switch_to_default_content()
+        # # driver.switch_to.frame('listContentsInfoFrame')
+        # # driver.switch_to.window(window_name=parent_window)
     print("================================")
 
-driver.quit()
