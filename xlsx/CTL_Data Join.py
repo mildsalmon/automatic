@@ -53,35 +53,51 @@ print("\n")
 # print("\n")
 
 
-grade_std_num_pd = grade_data_pd['hakbun']
-Full_std_num_pd = Full_data_pd['stu_num']
+# grade_std_num_pd = grade_data_pd['hakbun']
+# Full_std_num_pd = Full_data_pd['stu_num']
+#
+# count = 0
+# for i, grade_std_num in enumerate(grade_std_num_pd):
+#     for j, Full_std_num in enumerate(Full_std_num_pd):
+#         if (grade_std_num == Full_std_num):
+#             test = grade_data_pd.iloc[i, 3:]
+#             # print(test)
+#             count = count + 1
+#             # print(Full_data_pd.iloc[j, 10])
+#             # 데이터 집어넣기
+#             Full_data_pd.iloc[j, 11] = grade_data_pd.iloc[i, 3]
+#             Full_data_pd.iloc[j, 12] = grade_data_pd.iloc[i, 4]
+#             Full_data_pd.iloc[j, 13] = grade_data_pd.iloc[i, 5]
+#             Full_data_pd.iloc[j, 14] = grade_data_pd.iloc[i, 6]
+#             Full_data_pd.iloc[j, 15] = grade_data_pd.iloc[i, 7]
+#             Full_data_pd.iloc[j, 16] = grade_data_pd.iloc[i, 8]
+#
+#             print(Full_data_pd.iloc[j,])
+#             print('\n')
+#
+#             # print(grade_data_pd.iloc[1, ['avg_2018_1',
+#             #                           'avg_2018_2',
+#             #                           'avg_2019_1',
+#             #                           'avg_2019_2',
+#             #                           'avg_2020_1',
+#             #                           'avg_2020_2']])
+#
+# print(count)
+#
+# Full_data_pd.to_excel('test_Full_join.xlsx')
 
-count = 0
-for i, grade_std_num in enumerate(grade_std_num_pd):
-    for j, Full_std_num in enumerate(Full_std_num_pd):
-        if (grade_std_num == Full_std_num):
-            test = grade_data_pd.iloc[i, 3:]
-            # print(test)
-            count = count + 1
-            # print(Full_data_pd.iloc[j, 10])
-            # 데이터 집어넣기
-            Full_data_pd.iloc[j, 11] = grade_data_pd.iloc[i, 3]
-            Full_data_pd.iloc[j, 12] = grade_data_pd.iloc[i, 4]
-            Full_data_pd.iloc[j, 13] = grade_data_pd.iloc[i, 5]
-            Full_data_pd.iloc[j, 14] = grade_data_pd.iloc[i, 6]
-            Full_data_pd.iloc[j, 15] = grade_data_pd.iloc[i, 7]
-            Full_data_pd.iloc[j, 16] = grade_data_pd.iloc[i, 8]
+# print(grade_data_pd['kor_name'])
 
-            print(Full_data_pd.iloc[j,])
-            print('\n')
+grade_std_pd = grade_data_pd.loc[:,'hakbun' : 'kor_name']
+Full_std_pd = Full_data_pd.loc[:,'stu_num' : 'name']
 
-            # print(grade_data_pd.iloc[1, ['avg_2018_1',
-            #                           'avg_2018_2',
-            #                           'avg_2019_1',
-            #                           'avg_2019_2',
-            #                           'avg_2020_1',
-            #                           'avg_2020_2']])
+print(grade_std_pd)
+print(Full_std_pd)
 
-print(count)
-
-Full_data_pd.to_excel('test_Full_join.xlsx')
+for i, grade_std_num in enumerate(grade_std_pd['hakbun']):
+    for j, full_std_num in enumerate(Full_std_pd['stu_num']):
+        if grade_std_num == full_std_num:
+            if grade_std_pd.iloc[i, 1] != Full_std_pd.iloc[j, 1]:
+                print("성적 : ", grade_std_pd.iloc[i,])
+                print("CTL : ", Full_std_pd.iloc[j,])
+                print("\n")
